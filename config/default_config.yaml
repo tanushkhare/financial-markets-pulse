@@ -1,0 +1,13 @@
+supported_symbols:
+  - AAPL
+  - GOOGL
+  - MSFT
+  - AMZN
+  - TSLA
+
+weighting_coefficients:
+  price_weight: 0.65
+  volume_weight: 0.35
+
+anomaly_threshold: 0.75
+ingestion_interval_seconds: 5

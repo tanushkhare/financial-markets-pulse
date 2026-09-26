@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard // Financial Markets Pulse</title>
+  <style>
+    :root {
+      --bg-main: #060913; --bg-card: #0d1322; --bg-card-hover: #131c31;
+      --accent-green: #00f5a0; --accent-red: #ff3366; --accent-blue: #00d2ff;
+      --text-main: #f8fafc; --text-muted: #64748b; --border: #1e293b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, monospace, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+    header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border: 1px solid var(--border); padding: 16px 24px; border-radius: 12px; }
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 12px; height: 12px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 12px var(--accent-green); }
+    .logo-title { font-size: 1.15rem; font-weight: 800; letter-spacing: 1px; color: #fff; }
+    nav { display: flex; gap: 10px; }
+    .nav-link { color: var(--text-muted); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; border: 1px solid transparent; }
+    .nav-link.active { background: rgba(0, 210, 255, 0.1); color: var(--accent-blue); border-color: rgba(0, 210, 255, 0.3); }
+    .nav-link:hover { color: var(--text-main); background: var(--bg-card-hover); }
+    .status-pill { background: rgba(0, 245, 160, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    .card-title { font-size: 0.95rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 12px; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    td { padding: 16px 12px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+    tr:hover { background: var(--bg-card-hover); }
+    .price-up { color: var(--accent-green); font-weight: bold; }
+    .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+    .badge-normal { background: rgba(0, 245, 160, 0.15); color: var(--accent-green); border: 1px solid rgba(0, 245, 160, 0.3); }
+    .badge-anomaly { background: rgba(255, 51, 102, 0.15); color: var(--accent-red); border: 1px solid rgba(255, 51, 102, 0.3); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-area"><div class="logo-icon"></div><div class="logo-title">FINANCIAL MARKETS PULSE</div></div>
+    <nav>
+      <a href="index.html" class="nav-link active">Live Tickers</a>
+      <a href="anomalies.html" class="nav-link">Anomaly Audits</a>
+      <a href="analytics.html" class="nav-link">Analytics & Charts</a>
+    </nav>
+    <div class="status-pill" id="systemStatus">ONLINE // LIVE</div>
+  </header>
+  <main class="card">
+    <div class="card-header">
+      <span class="card-title">Active Market Stream & Volatility Metrics</span>
+      <span style="font-size: 0.8rem; color: var(--text-muted);" id="lastUpdated">Last Sync: --:--:--</span>
+    </div>
+    <table>
+      <thead><tr><th>Symbol</th><th>Last Price</th><th>Volume</th><th>Volatility</th><th>Status</th></tr></thead>
+      <tbody id="marketTableBody"><tr><td colspan="5" style="text-align:center; color: var(--text-muted); padding: 40px;">Fetching hypertable partitions...</td></tr></tbody>
+    </table>
+  </main>
+  <script>
+    const API_BASE_URL = "http://localhost:8000";
+    async function fetchData() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/v1/market/latest`);
+        const data = await res.json();
+        document.getElementById('systemStatus').innerText = "ONLINE // LIVE";
+        document.getElementById('lastUpdated').innerText = `Last Sync: ${new Date().toLocaleTimeString()}`;
+        if (Array.isArray(data) && data.length > 0) {
+          let html = "";
+          data.forEach(item => {
+            const isAnom = item.is_anomaly;
+            html += `<tr><td><strong>${item.symbol}</strong></td><td class="price-up">$${Number(item.price).toFixed(2)}</td><td>${Number(item.volume).toLocaleString()}</td><td>${Number(item.volatility || 0).toFixed(4)}</td><td>${isAnom ? '<span class="badge badge-anomaly">⚠️ ANOMALY</span>' : '<span class="badge badge-normal">NORMAL</span>'}</td></tr>`;
+          });
+          document.getElementById('marketTableBody').innerHTML = html;
+        }
+      } catch (err) {
+        document.getElementById('systemStatus').innerText = "OFFLINE";
+      }
+    }
+    window.onload = () => { fetchData(); setInterval(fetchData, 2000); };
+  </script>
+</body>
+</html>

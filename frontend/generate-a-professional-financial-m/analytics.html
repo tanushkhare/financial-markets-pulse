@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics // Financial Markets Pulse</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-main: #060913; --bg-card: #0d1322; --bg-card-hover: #131c31;
+      --accent-blue: #00d2ff; --text-main: #f8fafc; --text-muted: #64748b; --border: #1e293b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, monospace, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+    header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border: 1px solid var(--border); padding: 16px 24px; border-radius: 12px; }
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { width: 12px; height: 12px; background: var(--accent-blue); border-radius: 50%; box-shadow: 0 0 12px var(--accent-blue); }
+    .logo-title { font-size: 1.15rem; font-weight: 800; letter-spacing: 1px; color: #fff; }
+    nav { display: flex; gap: 10px; }
+    .nav-link { color: var(--text-muted); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; border: 1px solid transparent; }
+    .nav-link.active { background: rgba(0, 210, 255, 0.1); color: var(--accent-blue); border-color: rgba(0, 210, 255, 0.3); }
+    .nav-link:hover { color: var(--text-main); background: var(--bg-card-hover); }
+    .status-pill { background: rgba(0, 210, 255, 0.1); color: var(--accent-blue); border: 1px solid var(--accent-blue); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    .card-title { font-size: 0.95rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+    .chart-container { position: relative; height: 400px; width: 100%; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-area"><div class="logo-icon"></div><div class="logo-title">FINANCIAL MARKETS PULSE</div></div>
+    <nav>
+      <a href="index.html" class="nav-link">Live Tickers</a>
+      <a href="anomalies.html" class="nav-link">Anomaly Audits</a>
+      <a href="analytics.html" class="nav-link active">Analytics & Charts</a>
+    </nav>
+    <div class="status-pill">ANALYTICS ENGINE</div>
+  </header>
+  <main class="card">
+    <div class="card-header"><span class="card-title">Real-Time Market Volatility Index Trend</span></div>
+    <div class="chart-container"><canvas id="mainVolatilityChart"></canvas></div>
+  </main>
+  <script>
+    const API_BASE_URL = "http://localhost:8000";
+    let chart = null;
+    function initChart() {
+      const ctx = document.getElementById('mainVolatilityChart').getContext('2d');
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'Market Volatility Index', data: [], borderColor: '#00d2ff', backgroundColor: 'rgba(0, 210, 255, 0.08)', borderWidth: 3, tension: 0.3, fill: true, pointRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#f8fafc' } } }, scales: { x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } }, y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } } } }
+      });
+    }
+    async function updateChart() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/v1/market/latest`);
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          let totalVol = 0;
+          data.forEach(item => totalVol += Number(item.volatility || 0));
+          const avgVol = (totalVol / data.length).toFixed(4);
+          const timeLabel = new Date().toLocaleTimeString();
+          if (chart.data.labels.length > 15) { chart.data.labels.shift(); chart.data.datasets[0].data.shift(); }
+          chart.data.labels.push(timeLabel);
+          chart.data.datasets[0].data.push(avgVol);
+          chart.update('none');
+        }
+      } catch (err) { console.error("Analytics poll error", err); }
+    }
+    window.onload = () => { initChart(); updateChart(); setInterval(updateChart, 2000); };
+  </script>
+</body>
+</html>
