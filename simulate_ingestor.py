@@ -35,7 +35,7 @@ try:
 
                 # Insert directly into your TimescaleDB hypertable (markets_vscf)
                 query = text("""
-                    INSERT INTO markets_vscf (time, symbol, price, volume, volatility, is_anomaly)
+                    INSERT INTO markets_data (time, symbol, price, volume, volatility, is_anomaly)
                     VALUES (NOW(), :symbol, :price, :volume, :volatility, :is_anomaly)
                 """)
                 
