@@ -3,8 +3,7 @@ const CONFIG = {
   // Live Render FastAPI Backend URL
   API_BASE_URL: "https://financial-markets-pulse-api.onrender.com",
 
-  // Live Render PostgreSQL / TimescaleDB Connection String (External)
-  DATABASE_URL: "postgresql://market_admin:6QFDVbuSxJkUBLijsGXuVHZNvHI4cGGP@dpg-das39r60tbcc73dl53cg-a.singapore-postgres.render.com/markets_vscf",
+  
 
   // Public Endpoints
   ENDPOINTS: {
