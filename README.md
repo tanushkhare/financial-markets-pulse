@@ -1,11 +1,29 @@
 # 📈 Financial Markets Pulse
 
+<div align="center">
+
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Live-success?style=flat-square&logo=vercel)](https://financial-markets-pulse.vercel.app/index.html)
+[![FastAPI Backend](https://img.shields.io/badge/FastAPI-v2-blue?style=flat-square&logo=fastapi)](https://financial-markets-pulse-api-v2.onrender.com/docs)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+
+</div>
+
 A real-time financial market data streaming, anomaly detection, and analytics platform built with a modern decoupled architecture. It tracks live market tickers, performs automated anomaly audits, provides advanced analytics and charts, and exposes both REST and GraphQL APIs.
 
 * **Live Web Application:** [https://financial-markets-pulse.vercel.app/index.html](https://financial-markets-pulse.vercel.app/index.html)
 * **Backend API Documentation (Swagger / OpenAPI):** [https://financial-markets-pulse-api-v2.onrender.com/docs](https://financial-markets-pulse-api-v2.onrender.com/docs)
 
 ---
+
+## 📸 Dashboard Preview
+
+![Dashboard Preview](assets/dashboard-preview.png)
+
+## 📸 Analytics and Volatility Trend
+![Analytics and Volatility Trend](assets/analytics-charts.png)
+
+## 📸 GitHub Actions Ingestor Success
+![GitHub Actions Ingestor Success](assets/github-actions-ingestor.png)
 
 ## 🚀 Key Features
 
@@ -71,6 +89,10 @@ Open frontend/generate-a-professional-financial-m/index.html directly in your br
 This project is open-source and available under the MIT License.
 
 
----
+### Step 3: Push it to GitHub
+Once you save the file and put your image in the `assets/` folder, run these commands in your terminal:
 
-Let me know if you would like to tweak any sections or if you're ready to move on to setting up the GitHub Actions ingestor workflow!
+```bash
+git add .
+git commit -m "Enhance README with badges and dashboard preview image"
+git push origin main
