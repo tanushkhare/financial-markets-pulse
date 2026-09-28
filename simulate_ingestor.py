@@ -20,6 +20,32 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 symbols = ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA"]
 prices = {sym: random.uniform(100.0, 500.0) for sym in symbols}
 
+print("Ensuring market_data table exists...")
+db = SessionLocal()
+try:
+    db.execute(text("""
+        CREATE TABLE IF NOT EXISTS market_data (
+            time TIMESTAMPTZ NOT NULL,
+            symbol TEXT NOT NULL,
+            price DOUBLE PRECISION,
+            volume INTEGER,
+            volatility DOUBLE PRECISION,
+            is_anomaly BOOLEAN DEFAULT FALSE
+        );
+    """))
+    db.execute(text("""
+        CREATE INDEX IF NOT EXISTS idx_market_data_symbol_time
+        ON market_data (symbol, time DESC);
+    """))
+    db.commit()
+    print("Table check complete.")
+except Exception as e:
+    db.rollback()
+    print(f"[Error] Failed to ensure table exists: {e}")
+    raise
+finally:
+    db.close()
+
 print("Running one ingestion batch...")
 db = SessionLocal()
 try:
