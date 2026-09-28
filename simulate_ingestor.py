@@ -10,11 +10,9 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set in environment variables or .env file.")
 
-# --- TEMPORARY DEBUG ---
-print(f"DEBUG length: {len(DATABASE_URL)}")
-print(f"DEBUG repr start: {repr(DATABASE_URL[:20])}")
-print(f"DEBUG repr end: {repr(DATABASE_URL[-20:])}")
-# --- END DEBUG ---
+# Force the psycopg2 driver explicitly
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
